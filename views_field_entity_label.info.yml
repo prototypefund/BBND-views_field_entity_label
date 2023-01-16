@@ -1,0 +1,4 @@
+name: Views Field "Entity Label"
+type: module
+description: Provides an "Entity Label" views field.
+core_version_requirement: ^9 || ^10

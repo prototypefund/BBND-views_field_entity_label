@@ -1,0 +1,23 @@
+<?php
+
+/**
+ * Implements hook_views_data().
+ *
+ * @see views_views_data
+ * @see \Drupal\views\EntityViewsData::getViewsData
+ */
+function views_field_entity_label_views_data() {
+  $data = [];
+  foreach (\Drupal::entityTypeManager()->getDefinitions() as $entityTypeId => $entityType) {
+    $base_table = $entityType->getBaseTable() ?: $entityType->id();
+    $data[$base_table]['entity_' . $entityTypeId . '__label'] = [
+      'title' => t('Entity label'),
+      'help' => t('Displays the entity label.'),
+      'field' => [
+        'entity_type' => $entityTypeId,
+        'id' => 'views_field_entity_label',
+      ],
+    ];
+  }
+  return $data;
+}

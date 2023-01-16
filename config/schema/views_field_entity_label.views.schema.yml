@@ -1,0 +1,7 @@
+views.field.views_field_entity_label:
+  type: views_field
+  label: 'Entity label'
+  mapping:
+    link_to_entity:
+      type: boolean
+      label: 'Link to entity'
