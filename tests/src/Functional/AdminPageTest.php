@@ -37,7 +37,7 @@ class AdminPageTest extends BrowserTestBase {
 
     // Ensure that the test is not marked as risky because of no assertions.
     // see https://gitlab.com/weitzman/drupal-test-traits/-/commit/82bf5059908f9073b3468cb7313960da72176d9a
-    $this->addToAssertionCount(1);
+    // $this->addToAssertionCount(1);
   }
 
 }
