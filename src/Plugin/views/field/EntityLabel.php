@@ -75,7 +75,7 @@ class EntityLabel extends FieldPluginBase {
     }
 
     $build = [
-      '#access' => $entity->access('view', NULL, TRUE),
+      '#access' => $entity->access('view label', NULL, TRUE),
       '#plain_text' => $entity->label(),
     ];
     (new CacheableMetadata())
