@@ -45,6 +45,7 @@ class EntityLabel extends FieldPluginBase {
   protected function defineOptions() {
     $options = parent::defineOptions();
     $options['link_to_entity'] = ['default' => FALSE];
+    $options['link_only_if_access'] = ['default' => FALSE];
     return $options;
   }
 
@@ -55,16 +56,34 @@ class EntityLabel extends FieldPluginBase {
       '#type' => 'checkbox',
       '#default_value' => !empty($this->options['link_to_entity']),
     ];
+    $form['link_only_if_access'] = [
+      '#title' => $this->t('Link only if access'),
+      '#description' => $this->t('Only create a link if the user can access the link target.'),
+      '#type' => 'checkbox',
+      '#default_value' => !empty($this->options['link_only_if_access']),
+    ];
     parent::buildOptionsForm($form, $form_state);
   }
 
   public function render(ResultRow $values) {
     $entity = $this->getEntityTranslation($this->getEntity($values), $values);
 
+    $cacheability = (new CacheableMetadata())
+      ->addCacheableDependency($entity);
+
     if (!empty($this->options['link_to_entity'])) {
       try {
-        $this->options['alter']['url'] = $entity->toUrl();
-        $this->options['alter']['make_link'] = TRUE;
+        $url = $entity->toUrl();
+        if ($this->options['link_only_if_access']) {
+          $urlAccess = $url->access(NULL, TRUE);
+          $cacheability->addCacheableDependency($urlAccess);
+          $makeLink = $urlAccess->isAllowed();
+        }
+        else {
+          $makeLink = TRUE;
+        }
+        $this->options['alter']['url'] = $url;
+        $this->options['alter']['make_link'] = $makeLink;
       }
       catch (UndefinedLinkTemplateException $e) {
         $this->options['alter']['make_link'] = FALSE;
@@ -78,9 +97,7 @@ class EntityLabel extends FieldPluginBase {
       '#access' => $entity->access('view label', NULL, TRUE),
       '#plain_text' => $entity->label(),
     ];
-    (new CacheableMetadata())
-      ->addCacheableDependency($entity)
-      ->applyTo($build);
+    $cacheability->applyTo($build);
     return $build;
   }
 
